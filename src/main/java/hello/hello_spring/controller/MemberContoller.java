@@ -1,8 +1,14 @@
 package hello.hello_spring.controller;
 
+import hello.hello_spring.domain.Member;
 import hello.hello_spring.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+
+import java.util.List;
 
 @Controller // 스프링 컨테이너 내부에 Spring bean(MemberContoller 객체)이 관리 된다고 표현합니다
 public class MemberContoller {
@@ -40,4 +46,27 @@ public class MemberContoller {
     // SpringConfig 클래스를 만들어 @Configuration 어노태이션을 이용해 등록한다.
     // @Bean 메소드를 만들어 스프링 빈을 등록한다.
 
+    @GetMapping("/members/new")
+    public String createForm() {
+        return "members/createMemberForm";
+    }
+
+    @PostMapping("/members/new")
+    public String create(MemberForm form) {
+        Member member = new Member();
+        member.setName(form.getName());
+
+        System.out.println("member = " + member.getName());
+
+        memberService.join(member);
+
+        return "redirect:/";
+    }
+
+    @GetMapping("/members")
+    public String list(Model model) {
+        List<Member> members = memberService.findMembers();
+        model.addAttribute("members", members);
+        return "members/memberList";
+    }
 }
